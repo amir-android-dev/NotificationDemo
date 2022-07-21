@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+
 import android.content.ClipDescription
 import android.content.Context
 import android.content.Intent
@@ -12,15 +13,19 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import androidx.core.app.NotificationCompat
+import androidx.core.app.RemoteInput
 
 class MainActivity : AppCompatActivity() {
     lateinit var btnNotification: Button
 
     // Before write codes to send a notification, we have to first write codes to create a notification channel.
     private val channelID = "com.amir.notificationdemo.channel1"
-
     //notification manager instance, required to create a notification channel as well as notification instance
     private var notificationManager: NotificationManager? = null
+    //a key for replaying text
+    //will be used to recieve the user input
+   private val KEY_REPLAY="key_replay"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -42,6 +47,16 @@ class MainActivity : AppCompatActivity() {
         //creating pending Intent including this intent
         //What this flag does is , When the system create a new intent, if the pendingIntent already exists in the memory, system. keep it but replace its extra data with what is in this new Intent.
         val pendingIntent:PendingIntent= PendingIntent.getActivity(this,0,tapResultIntent,PendingIntent.FLAG_UPDATE_CURRENT)
+       //the plan is to go to another activity and display the user inputs there
+        //we need to create a remote input instance with the replay key and the replay label
+        val remoteInput: RemoteInput =RemoteInput.Builder(KEY_REPLAY).run {
+            //give the repay data lable, which will be displayed as hint on the text input field
+            setLabel("Inset your name here").build()
+        }
+        //we need an action for remote input
+        val replyAction:NotificationCompat.Action=NotificationCompat.Action.Builder(
+            0,"REPLAY",pendingIntent
+        ).addRemoteInput(remoteInput).build()
         //action button 1
         val intent2=Intent(this,DetailsActivity::class.java)
         val pendingIntent2:PendingIntent= PendingIntent.getActivity(this,0,intent2,PendingIntent.FLAG_UPDATE_CURRENT)
@@ -58,9 +73,9 @@ class MainActivity : AppCompatActivity() {
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setContentIntent(pendingIntent)
             .addAction(aciton2)
             .addAction(aciton3)
+            .addAction(replyAction)
             .build()
         notificationManager?.notify(notificationID, notification)
     }
