@@ -42,6 +42,14 @@ class MainActivity : AppCompatActivity() {
         //creating pending Intent including this intent
         //What this flag does is , When the system create a new intent, if the pendingIntent already exists in the memory, system. keep it but replace its extra data with what is in this new Intent.
         val pendingIntent:PendingIntent= PendingIntent.getActivity(this,0,tapResultIntent,PendingIntent.FLAG_UPDATE_CURRENT)
+        //action button 1
+        val intent2=Intent(this,DetailsActivity::class.java)
+        val pendingIntent2:PendingIntent= PendingIntent.getActivity(this,0,intent2,PendingIntent.FLAG_UPDATE_CURRENT)
+        val aciton2 : NotificationCompat.Action= NotificationCompat.Action.Builder(0,"Details",pendingIntent2).build()
+        //action button 2
+        val intent3=Intent(this,SettingsActivity::class.java)
+        val pendingIntent3:PendingIntent= PendingIntent.getActivity(this,0,intent3,PendingIntent.FLAG_UPDATE_CURRENT)
+        val aciton3 : NotificationCompat.Action= NotificationCompat.Action.Builder(0,"Setting",pendingIntent3).build()
 
         //notifivation compat to create the notification object
         val notification = NotificationCompat.Builder(this@MainActivity, channelID)
@@ -51,6 +59,8 @@ class MainActivity : AppCompatActivity() {
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
+            .addAction(aciton2)
+            .addAction(aciton3)
             .build()
         notificationManager?.notify(notificationID, notification)
     }
