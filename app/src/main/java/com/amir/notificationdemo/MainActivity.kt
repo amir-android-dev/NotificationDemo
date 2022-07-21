@@ -1,9 +1,12 @@
 package com.amir.notificationdemo
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.ClipDescription
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -30,9 +33,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     private fun displayNotification() {
         //any Int value
         val notificationID = 45
+        //configured an intent to launch that activity
+        val tapResultIntent=Intent(this,SecondActivity::class.java)
+        //creating pending Intent including this intent
+        //What this flag does is , When the system create a new intent, if the pendingIntent already exists in the memory, system. keep it but replace its extra data with what is in this new Intent.
+        val pendingIntent:PendingIntent= PendingIntent.getActivity(this,0,tapResultIntent,PendingIntent.FLAG_UPDATE_CURRENT)
+
         //notifivation compat to create the notification object
         val notification = NotificationCompat.Builder(this@MainActivity, channelID)
             .setContentTitle("Demo Title")
@@ -40,6 +50,7 @@ class MainActivity : AppCompatActivity() {
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
             .build()
         notificationManager?.notify(notificationID, notification)
     }
